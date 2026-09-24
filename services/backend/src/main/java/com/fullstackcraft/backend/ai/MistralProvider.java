@@ -10,21 +10,21 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * OpenAI-compatible provider covering OpenAI, Azure OpenAI, Together AI,
- * Groq, Ollama (OpenAI mode), Fireworks, Mistral AI API, etc.
- * Only base-url + api-key + model differ.
+ * Mistral AI Chat Completions API provider (OpenAI-compatible endpoint
+ * hosted by Mistral).
+ * Activate with AI_PROVIDER=mistral and AI_MISTRAL_API_KEY=...
  */
 @Component
-@ConditionalOnProperty(name = "ai.provider", havingValue = "openai", matchIfMissing = true)
-public class OpenAiCompatibleProvider implements AiProvider {
+@ConditionalOnProperty(name = "ai.provider", havingValue = "mistral")
+public class MistralProvider implements AiProvider {
 
   private final RestClient http;
   private final String model;
 
-  public OpenAiCompatibleProvider(
-      @Value("${ai.openai.base-url:https://api.openai.com/v1}") String baseUrl,
-      @Value("${ai.openai.api-key:}") String apiKey,
-      @Value("${ai.openai.model:gpt-4o-mini}") String model) {
+  public MistralProvider(
+      @Value("${ai.mistral.base-url:https://api.mistral.ai/v1}") String baseUrl,
+      @Value("${ai.mistral.api-key:}") String apiKey,
+      @Value("${ai.mistral.model:mistral-large-latest}") String model) {
     this.model = model;
     this.http = RestClient.builder()
         .baseUrl(baseUrl)
@@ -34,7 +34,7 @@ public class OpenAiCompatibleProvider implements AiProvider {
   }
 
   @Override
-  public String name() { return "openai"; }
+  public String name() { return "mistral"; }
   @Override
   public String model() { return model; }
 
@@ -43,7 +43,8 @@ public class OpenAiCompatibleProvider implements AiProvider {
     try {
       Map<String, Object> body = Map.of(
           "model", model,
-          "messages", List.of(Map.of("role", "user", "content", message)));
+          "messages", List.of(Map.of("role", "user", "content", message)),
+          "max_tokens", 4096);
       Map<String, Object> res = http.post().uri("/chat/completions").body(body)
           .retrieve().body(Map.class);
       if (res == null) return "";
@@ -51,7 +52,7 @@ public class OpenAiCompatibleProvider implements AiProvider {
       var msg = (Map<String, Object>) choices.get(0).get("message");
       return String.valueOf(msg.get("content"));
     } catch (Exception e) {
-      return "[openai] " + message + " (error: " + e.getMessage() + ")";
+      return "[mistral] " + message + " (error: " + e.getMessage() + ")";
     }
   }
 }

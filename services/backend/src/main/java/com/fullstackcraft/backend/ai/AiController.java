@@ -9,23 +9,36 @@ import org.springframework.web.bind.annotation.*;
 public class AiController {
 
   private final AiService ai;
+  private final AiProviderRegistry registry;
 
-  public AiController(AiService ai) {
+  public AiController(AiService ai, AiProviderRegistry registry) {
     this.ai = ai;
+    this.registry = registry;
   }
 
-  public record ChatRequest(@NotBlank String message) {}
+  public record ChatRequest(
+      @NotBlank String message,
+      String provider,
+      String model) {}
 
   @PostMapping("/chat")
   public AiService.ChatResponse chat(@Valid @RequestBody ChatRequest req) {
-    return ai.chat(req.message());
+    String provider = (req.provider != null && !req.provider.isBlank())
+        ? req.provider : registry.getFallback().name();
+    return ai.chat(provider, req.model(), req.message());
   }
 
   @GetMapping("/health")
-  public java.util.Map<String, String> health(org.springframework.beans.factory.ObjectProvider<AiProvider> provider) {
-    var p = provider.getIfAvailable();
+  public java.util.Map<String, String> health() {
+    var active = registry.resolve(System.getenv().getOrDefault("AI_PROVIDER", "echo"));
     return java.util.Map.of(
-        "provider", p == null ? "none" : p.name(),
-        "model", p == null ? "none" : p.model());
+        "provider", active.name(),
+        "model", active.model(),
+        "providers", String.join(",", registry.available()));
+  }
+
+  @GetMapping("/providers")
+  public java.util.Map<String, java.util.Set<String>> providers() {
+    return java.util.Map.of("available", registry.available());
   }
 }

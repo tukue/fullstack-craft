@@ -10,31 +10,34 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * OpenAI-compatible provider covering OpenAI, Azure OpenAI, Together AI,
- * Groq, Ollama (OpenAI mode), Fireworks, Mistral AI API, etc.
- * Only base-url + api-key + model differ.
+ * Anthropic Messages API provider.
+ * Activate with AI_PROVIDER=anthropic and AI_ANTHROPIC_API_KEY=...
  */
 @Component
-@ConditionalOnProperty(name = "ai.provider", havingValue = "openai", matchIfMissing = true)
-public class OpenAiCompatibleProvider implements AiProvider {
+@ConditionalOnProperty(name = "ai.provider", havingValue = "anthropic")
+public class AnthropicProvider implements AiProvider {
 
   private final RestClient http;
   private final String model;
+  private final double maxTokens;
 
-  public OpenAiCompatibleProvider(
-      @Value("${ai.openai.base-url:https://api.openai.com/v1}") String baseUrl,
-      @Value("${ai.openai.api-key:}") String apiKey,
-      @Value("${ai.openai.model:gpt-4o-mini}") String model) {
+  public AnthropicProvider(
+      @Value("${ai.anthropic.base-url:https://api.anthropic.com/v1}") String baseUrl,
+      @Value("${ai.anthropic.api-key:}") String apiKey,
+      @Value("${ai.anthropic.model:claude-sonnet-4-20250514}") String model,
+      @Value("${ai.anthropic.max-tokens:4096}") double maxTokens) {
     this.model = model;
+    this.maxTokens = maxTokens;
     this.http = RestClient.builder()
         .baseUrl(baseUrl)
         .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+        .defaultHeader("anthropic-version", "2023-06-01")
         .build();
   }
 
   @Override
-  public String name() { return "openai"; }
+  public String name() { return "anthropic"; }
   @Override
   public String model() { return model; }
 
@@ -43,15 +46,15 @@ public class OpenAiCompatibleProvider implements AiProvider {
     try {
       Map<String, Object> body = Map.of(
           "model", model,
+          "max_tokens", (int) maxTokens,
           "messages", List.of(Map.of("role", "user", "content", message)));
-      Map<String, Object> res = http.post().uri("/chat/completions").body(body)
+      Map<String, Object> res = http.post().uri("/messages").body(body)
           .retrieve().body(Map.class);
       if (res == null) return "";
-      var choices = (List<Map<String, Object>>) res.get("choices");
-      var msg = (Map<String, Object>) choices.get(0).get("message");
-      return String.valueOf(msg.get("content"));
+      var content = (List<Map<String, Object>>) res.get("content");
+      return String.valueOf(content.get(0).get("text"));
     } catch (Exception e) {
-      return "[openai] " + message + " (error: " + e.getMessage() + ")";
+      return "[anthropic] " + message + " (error: " + e.getMessage() + ")";
     }
   }
 }
