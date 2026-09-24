@@ -1,0 +1,43 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: backend
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+# --- Generic AI config ---
+# Select provider via AI_PROVIDER env var. Any registered name works.
+# AI_PROVIDER=echo|openai|anthropic|ollama|gemini|mistral|local
+# Omit to fall back to EchoProvider (default).
+ai:
+  provider: ${AI_PROVIDER:echo}
+  echo: {}
+  openai:
+    base-url: ${AI_OPENAI_BASE_URL:https://api.openai.com/v1}
+    api-key: ${AI_OPENAI_API_KEY:}
+    model: ${AI_OPENAI_MODEL:gpt-4o-mini}
+  anthropic:
+    base-url: ${AI_ANTHROPIC_BASE_URL:https://api.anthropic.com/v1}
+    api-key: ${AI_ANTHROPIC_API_KEY:}
+    model: ${AI_ANTHROPIC_MODEL:claude-sonnet-4-20250514}
+    max-tokens: ${AI_ANTHROPIC_MAX_TOKENS:4096}
+  ollama:
+    base-url: ${AI_OLLAMA_BASE_URL:http://localhost:11434}
+    model: ${AI_OLLAMA_MODEL:llama3}
+  gemini:
+    base-url: ${AI_GEMINI_BASE_URL:https://generativelanguage.googleapis.com/v1beta}
+    api-key: ${AI_GEMINI_API_KEY:}
+    model: ${AI_GEMINI_MODEL:gemini-2.5-flash}
+  mistral:
+    base-url: ${AI_MISTRAL_BASE_URL:https://api.mistral.ai/v1}
+    api-key: ${AI_MISTRAL_API_KEY:}
+    model: ${AI_MISTRAL_MODEL:mistral-large-latest}
+  local:
+    base-url: ${AI_LOCAL_BASE_URL:http://localhost:1234/v1}
+    model: ${AI_LOCAL_MODEL:local-model}

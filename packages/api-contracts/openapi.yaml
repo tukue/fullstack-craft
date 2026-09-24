@@ -1,0 +1,51 @@
+openapi: 3.0.3
+info:
+  title: fullstack-craft API
+  version: 0.1.0
+  description: Single contract shared by React frontend and Java backend.
+paths:
+  /api/health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+  /api/ai/chat:
+    post:
+      summary: Chat via configured AI provider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+  /api/ai/health:
+    get:
+      summary: AI provider status
+      responses:
+        '200':
+          description: OK
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+    ChatResponse:
+      type: object
+      properties:
+        reply:
+          type: string
+        provider:
+          type: string
+        model:
+          type: string
