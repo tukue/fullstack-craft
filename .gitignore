@@ -46,3 +46,18 @@ Thumbs.db
 .cache/
 .parcel-cache/
 .eslintcache
+
+# Java / Spring Boot
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+**/build/
+!**/src/**/build/
+bin/
+!**/src/**/bin/
