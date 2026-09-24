@@ -1,5 +1,6 @@
 # **Markdown Template Guide**
 
+
 ---
 
 ## **Table of Contents**
@@ -12,6 +13,7 @@
 7. [Code Blocks](#code-blocks)
 8. [Git Commands Section](#git-commands-section)
 9. [Conclusion](#conclusion)
+10. [Architecture] (#Architecture) 
 
 ---
 
@@ -121,3 +123,8 @@ Markdown is a simple, flexible, and powerful language for creating documents and
 - *Italic Text:* `*Italic*`
 - `Inline Code:` `` `Code` ``
 - [Hyperlink Example](https://example.com)
+ 
+--- 
+
+## App Architecture 
+ Application Architecture diagram 
