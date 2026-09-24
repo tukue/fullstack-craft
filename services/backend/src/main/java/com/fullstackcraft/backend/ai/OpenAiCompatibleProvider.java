@@ -26,7 +26,7 @@ public class OpenAiCompatibleProvider implements AiProvider {
       @Value("${ai.openai.api-key:}") String apiKey,
       @Value("${ai.openai.model:gpt-4o-mini}") String model) {
     this.model = model;
-    this.http = RestClient.builder()
+    this.http = apiKey == null || apiKey.isBlank() ? null : RestClient.builder()
         .baseUrl(baseUrl)
         .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
         .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
@@ -48,7 +48,9 @@ public class OpenAiCompatibleProvider implements AiProvider {
           .retrieve().body(Map.class);
       if (res == null) return "";
       var choices = (List<Map<String, Object>>) res.get("choices");
+      if (choices == null || choices.isEmpty()) return "";
       var msg = (Map<String, Object>) choices.get(0).get("message");
+      if (msg == null) return "";
       return String.valueOf(msg.get("content"));
     } catch (Exception e) {
       return "[openai] " + message + " (error: " + e.getMessage() + ")";
