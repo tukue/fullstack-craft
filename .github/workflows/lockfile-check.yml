@@ -1,1 +1,22 @@
-fatal: path '.github/workflows/lockfile-check.yml' exists on disk, but not in '965b0ac'
+name: Lockfile and node_modules check
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  lockfile-check:
+    name: Verify lock files and no node_modules in git
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check package-lock.json exists
+        run: |
+          test -f apps/frontend/package-lock.json && echo "frontend lockfile OK" || (echo "MISSING frontend lockfile" && exit 1)
+      - name: Check node_modules not committed
+        run: |
+          if git ls-files | grep -q "^node_modules/"; then
+            echo "ERROR: node_modules is committed"
+            exit 1
+          fi
+          echo "No node_modules in git — OK"

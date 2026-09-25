@@ -1,1 +1,8 @@
-fatal: path 'apps/frontend/src/routes/Home.tsx' exists on disk, but not in '965b0ac'
+export default function Home() {
+  return (
+    <main>
+      <h1>fullstack-craft</h1>
+      <p>Frontend placeholder</p>
+    </main>
+  );
+}

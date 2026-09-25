@@ -1,1 +1,12 @@
-fatal: path 'apps/frontend/vitest.config.ts' exists on disk, but not in '965b0ac'
+import { defineConfig } from 'vitest/config';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./src/test-setup.ts'],
+    include: ['src/**/*.test.{ts,tsx}'],
+  },
+});

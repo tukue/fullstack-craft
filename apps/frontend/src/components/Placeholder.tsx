@@ -1,1 +1,3 @@
-fatal: path 'apps/frontend/src/components/Placeholder.tsx' exists on disk, but not in '965b0ac'
+export function Placeholder() {
+  return <div>Placeholder component</div>;
+}

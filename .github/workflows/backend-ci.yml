@@ -1,1 +1,68 @@
-fatal: path '.github/workflows/backend-ci.yml' exists on disk, but not in '965b0ac'
+name: Backend CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend (compile / test / package)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/backend
+    env:
+      JAVA_HOME: /usr/local/sdkman/candidates/java/current
+      AI_PROVIDER: echo
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: maven-${{ runner.os }}-${{ hashFiles('services/backend/pom.xml') }}
+          restore-keys: |
+            maven-${{ runner.os }}-
+
+      - name: Compile
+        run: mvn -q compile -DskipTests
+
+      - name: Test
+        run: mvn test
+
+      - name: Package
+        run: mvn -q package -DskipTests
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-jar
+          path: services/backend/target/*.jar
+          retention-days: 7
+
+  security-scan:
+    name: Security (Gitleaks)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
