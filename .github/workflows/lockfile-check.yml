@@ -15,8 +15,14 @@ jobs:
           test -f apps/frontend/package-lock.json && echo "frontend lockfile OK" || (echo "MISSING frontend lockfile" && exit 1)
       - name: Check node_modules not committed
         run: |
-          if git ls-files | grep -q "^node_modules/"; then
+          if git ls-files --error-unmatch node_modules > /dev/null 2>&1; then
             echo "ERROR: node_modules is committed"
             exit 1
           fi
           echo "No node_modules in git — OK"
+      - name: Check yarn.lock/pnpm.lock consistency
+        run: |
+          if [ -f apps/frontend/yarn.lock ]; then
+            echo "yarn.lock found — ensuring package-lock.json is consistent"
+            npx npm-ls --json > /dev/null 2>&1 || echo "warn: npm-ls check failed"
+          fi

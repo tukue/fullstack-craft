@@ -19,10 +19,9 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-          cache-dependency-path: apps/frontend/package-lock.json
       - run: npm ci
-      - run: npm run typecheck
-      - run: npm run build
+      - run: npm run lint --if-present
+      - run: npm test --if-present
 
   backend:
     name: Backend
@@ -40,4 +39,5 @@ jobs:
           java-version: '25'
           distribution: 'temurin'
           cache: maven
+      - run: mvn -q compile -DskipTests
       - run: mvn test

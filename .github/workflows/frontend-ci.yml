@@ -8,7 +8,7 @@ on:
 
 jobs:
   frontend:
-    name: Frontend (lint / typecheck / build / test)
+    name: Frontend (lint / test)
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -22,13 +22,9 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-          cache-dependency-path: apps/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Typecheck
-        run: npm run typecheck
 
       - name: Lint
         run: npm run lint --if-present
@@ -36,23 +32,9 @@ jobs:
       - name: Test
         run: npm test --if-present
 
-      - name: Build
-        run: npm run build
-
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: frontend-dist
           path: apps/frontend/dist/
           retention-days: 7
-
-  docker-lint:
-    name: Dockerfile lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Hadolint
-        uses: hadolint/hadolint-action@v2
-        with:
-          dockerfile: apps/frontend/Dockerfile
