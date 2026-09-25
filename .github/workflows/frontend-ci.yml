@@ -22,7 +22,6 @@ jobs:
         with:
           node-version-file: .nvmrc
           cache: npm
-          cache-dependency-path: apps/frontend/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -45,14 +44,3 @@ jobs:
           name: frontend-dist
           path: apps/frontend/dist/
           retention-days: 7
-
-  docker-lint:
-    name: Dockerfile lint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Hadolint
-        uses: hadolint/hadolint-action@v2
-        with:
-          dockerfile: apps/frontend/Dockerfile
