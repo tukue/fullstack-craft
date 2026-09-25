@@ -61,3 +61,8 @@ gradle-app.setting
 !**/src/**/build/
 bin/
 !**/src/**/bin/
+# Monorepo
+*.tsbuildinfo
+node_modules/
+dist/
+target/
