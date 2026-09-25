@@ -1,0 +1,69 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.nuxt/
+.output/
+coverage/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor / IDE
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temp / cache
+*.tmp
+*.temp
+.cache/
+.parcel-cache/
+.eslintcache
+
+# Java / Spring Boot
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.iml
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+**/build/
+!**/src/**/build/
+bin/
+!**/src/**/bin/
+
+# Monorepo
+*.tsbuildinfo
+node_modules/
+dist/
+target/

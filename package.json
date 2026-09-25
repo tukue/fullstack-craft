@@ -1,0 +1,14 @@
+{
+  "name": "fullstack-craft",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": ["apps/*"],
+  "scripts": {
+    "dev:frontend": "npm --workspace @fullstack-craft/frontend run dev",
+    "build:frontend": "npm --workspace @fullstack-craft/frontend run build",
+    "build:all": "npm run build:frontend && cd services/backend && mvn -q package -DskipTests"
+  },
+  "engines": {
+    "node": ">=24"
+  }
+}
